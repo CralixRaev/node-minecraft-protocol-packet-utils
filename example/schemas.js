@@ -1,6 +1,7 @@
 const serverConnectPacket = {
+    'packet_type': 'u8',
     'token': 'string',
-    'ip': 'string',
+    'host': 'string',
     'port': 'i32',
     'priority': 'boolean',
 }

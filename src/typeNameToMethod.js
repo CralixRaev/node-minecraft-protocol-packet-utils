@@ -1,5 +1,6 @@
 export const typeNameToMethod = {
-    'string': 'readUTF8',
-    'i32': 'readInt32',
-    'boolean': 'readBoolean',
+    'string': 'UTF8',
+    'i32': 'Int32',
+    'u8': 'UInt8',
+    'boolean': 'Boolean',
 }

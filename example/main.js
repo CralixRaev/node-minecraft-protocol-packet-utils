@@ -33,14 +33,16 @@ function hexStringToArrayBuffer(hexString) {
 }
 import CursoredBuffer from '../src/cursoredBuffer.js';
 import SchemaDecoder from '../src/schemaDecoder.js';
+import SchemaEncoder from '../src/schemaEncoder.js';
 
 import * as schemas from './schemas.js' ;
 
-const DEFAULT_PACKET_OFFSET = 1
-
 
 let buffer = hexStringToArrayBuffer("06002431303835386164332d316466362d343435322d623164662d353730643338633739303636000d3134352e3233392e302e31393300006aa700")
-let cursored_buffer = new CursoredBuffer(buffer, DEFAULT_PACKET_OFFSET)
-let decoder = new SchemaDecoder(schemas.serverConnectPacket, cursored_buffer)
+let cursored_buffer = new CursoredBuffer(buffer)
+let decoder = new SchemaDecoder(schemas.serverConnectPacket)
+let encoder = new SchemaEncoder(schemas.serverConnectPacket)
 
-console.log(decoder.decode())
+let decoded_data = decoder.decode(cursored_buffer)
+let encoded_data = encoder.encode(decoded_data)
+console.log(decoder.decode(encoded_data))

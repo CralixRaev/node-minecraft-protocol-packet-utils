@@ -1,16 +1,17 @@
+import CursoredBuffer from "./cursoredBuffer.js"
+import { typeNameToMethod } from './typeNameToMethod.js'
+
 export default class SchemaEncoder {
-    constructor(schema, cursored_buffer) {
+    constructor(schema) {
         this.schema = schema
-        this.cursored_buffer = cursored_buffer
     }
 
-    decode() {
-        let decoded_info = {}
+    encode(data) {
+        let cursored_buffer = new CursoredBuffer(new ArrayBuffer(10000)) 
         for (const [key, value] of Object.entries(this.schema)) {
-            let method_name = this._type_name_to_method[value]
-            let decoded_value = this.cursored_buffer[method_name]()
-            decoded_info[key] = decoded_value
+            let method_name = typeNameToMethod[value]
+            cursored_buffer['write' + method_name](data[key])
         }
-        return decoded_info
+        return cursored_buffer.buffer.slice(0, cursored_buffer._offset)
     }
 }
