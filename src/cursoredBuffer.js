@@ -13,8 +13,12 @@ export default class CursoredBuffer {
 
 
     constructor(buffer, startOffset) {
-        this.buffer = buffer
-        this.view = new DataView(this.#toArrayBuffer(buffer))
+        if (! buffer instanceof ArrayBuffer) {
+            this.buffer = this.#toArrayBuffer(buffer)
+        } else {
+            this.buffer = buffer
+        }
+        this.view = new DataView(this.buffer)
         this._offset = startOffset
     }
 
