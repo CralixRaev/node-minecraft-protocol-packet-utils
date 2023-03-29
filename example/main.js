@@ -31,8 +31,8 @@ function hexStringToArrayBuffer(hexString) {
     
     return array.buffer;
 }
-import CursoredBuffer from './cursoredBuffer.js';
-import SchemaDecoder from './schemaDecoder.js';
+import CursoredBuffer from '../src/cursoredBuffer.js';
+import SchemaDecoder from '../src/schemaDecoder.js';
 
 import * as schemas from './schemas.js' ;
 

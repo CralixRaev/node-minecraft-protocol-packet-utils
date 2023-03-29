@@ -2,9 +2,19 @@ export default class CursoredBuffer {
     _offset = 1
     _utf8_decoder = new TextDecoder("utf-8")
 
+     #toArrayBuffer(buffer) {
+        const arrayBuffer = new ArrayBuffer(buffer.length);
+        const view = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < buffer.length; ++i) {
+          view[i] = buffer[i];
+        }
+        return arrayBuffer;
+      }
+
+
     constructor(buffer, startOffset) {
         this.buffer = buffer
-        this.view = new DataView(buffer)
+        this.view = new DataView(this.#toArrayBuffer(buffer))
         this._offset = startOffset
     }
 

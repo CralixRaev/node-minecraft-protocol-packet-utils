@@ -1,3 +1,6 @@
 {
+    "name": "node-minecraft-protocol-packet-utils",
+    "description": "Package for decoding and encoding custom_payload minecraft packets",
+    "version": "1.0.0",
     "type": "module"
 }
