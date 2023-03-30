@@ -1,61 +1,52 @@
+import { Buffer } from 'node:buffer';
+
 export default class CursoredBuffer {
     _offset = 1
     _utf8_decoder = new TextDecoder("utf-8")
     _utf8_encoder = new TextEncoder("utt-8")
 
-    #toArrayBuffer(buffer) {
-        const arrayBuffer = new ArrayBuffer(buffer.length);
-        const view = new Uint8Array(arrayBuffer);
-        for (let i = 0; i < buffer.length; ++i) {
-            view[i] = buffer[i];
-        }
-        return arrayBuffer;
-    }
-
-
     constructor(buffer, startOffset) {
-        if (!buffer instanceof ArrayBuffer) {
-            this.buffer = this.#toArrayBuffer(buffer)
+        if (!(buffer instanceof Buffer)) {
+            //todo: convert
         } else {
             this.buffer = buffer
         }
-        this.view = new DataView(this.buffer)
         this._offset = startOffset == null ? 0 : startOffset
     }
 
-    #readFromView(method, offset_increment) {
-        let value = method.bind(this.view)(this._offset)
+    #readFromBuffer(method, offset_increment) {
+        let value = method.bind(this.buffer)(this._offset)
         this._offset += offset_increment
         return value
     }
 
-    #writeToView(method, offset_increment, value) {
-        method.bind(this.view)(this._offset, value)
+    #writeToBuffer(method, value, offset_increment) {
+        method.bind(this.buffer)(value, this._offset)
         this._offset += offset_increment
     }
 
     readUInt8() {
-        return this.#readFromView(this.view.getUint8, 1)
+        return this.#readFromBuffer(this.buffer.readUInt8, 1)
     }
 
     writeUInt8(value) {
-        return this.#writeToView(this.view.setUint8, 1, value)
+        return this.#writeToBuffer(this.buffer.writeUInt8, value, 1)
     }
 
     readUint16() {
-        return this.#readFromView(this.view.getUint16, 2)
+        return this.#readFromBuffer(this.buffer.readUInt16BE, 2)
     }
 
     writeUint16(value) {
-        return this.#writeToView(this.view.setUint16, 2, value)
+        return this.#writeToBuffer(this.buffer.writeUInt16BE, value, 2)
     }
 
     readInt32() {
-        return this.#readFromView(this.view.getInt32, 4)
+        return this.#readFromBuffer(this.buffer.readInt32BE, 4)
     }
 
     writeInt32(value) {
-        return this.#writeToView(this.view.setInt32, 4, value)
+        return this.#writeToBuffer(this.buffer.writeInt32BE, value, 4)
     }
 
     readBoolean() {
@@ -66,23 +57,23 @@ export default class CursoredBuffer {
     writeBoolean(value) {
         return this.writeUInt8(value | 0)
     }
-    
+
     readUTF8() {
         /*
         * reads utf-8 string
         */
-       let string_length = this.readUint16();
-       let string_bytes = this.view.buffer.slice(this._offset, this._offset + string_length)
-       let decoded_string = this._utf8_decoder.decode(string_bytes)
-       this._offset += string_length // cause we use utf-8, every byte is one symbol
-       return decoded_string
+        let string_length = this.readUint16();
+        let string_bytes = this.buffer.subarray(this._offset, this._offset + string_length)
+        let decoded_string = this._utf8_decoder.decode(string_bytes)
+        this._offset += string_length // cause we use utf-8, every byte is one symbol
+        return decoded_string
     }
 
     writeUTF8(value) {
         this.writeUint16(value.length)
-        let bytes = new Uint8Array(this._utf8_encoder.encode(value))
-        for (const byte of bytes) {
-            this.writeUInt8(byte)
-        }
+        let buf = Buffer.from(value)
+        this._offset += 
+        buf.copy(this.buffer, this._offset, 0)
+    
     }
 }
